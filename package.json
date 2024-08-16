@@ -1,4 +1,36 @@
 {
   "name": "madnezz-app",
-  "packageManager": "yarn@4.2.2"
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "packageManager": "yarn@4.2.2",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64"
+  },
+  "dependencies": {
+    "jsdom": "^24.1.1"
+  },
+  "devDependencies": {
+    "electron": "^31.4.0",
+    "electron-builder": "^24.13.3",
+    "electron-rebuild": "^3.2.9"
+  },
+  "build": {
+    "appId": "com.example.madnezz",
+    "productName": "Madnezz",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }

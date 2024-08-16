@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet Generator</title>
+    <style>
+        .one { width: 95%; background-color: #333; }
+        .skill-row { margin-bottom: 10px; }
+        .remove-skill { cursor: pointer; color: red; }
+        .add-skill { cursor: pointer; color: green; }
+    </style>
+</head>
+<body>
+    <h1>Gerador de Ficha de Personagem</h1>
+
+    <!-- Form for Input -->
+    <form id="character-form">
+        <label for="name">Nome:</label><br>
+        <input type="text" id="name" name="name"><br>
+
+        <label for="group">Grupo:</label><br>
+        <input type="text" id="group" name="group"><br>
+
+        <label for="class">Classe:</label><br>
+        <input type="text" id="class" name="class"><br>
+
+        <label for="age">Idade:</label><br>
+        <input type="number" id="age" name="age"><br>
+
+        <label for="occupation">Ocupação:</label><br>
+        <input type="text" id="occupation" name="occupation"><br>
+
+        <label for="profession">Profissão:</label><br>
+        <input type="text" id="profession" name="profession"><br>
+
+        <label for="faceclaim">Faceclaim:</label><br>
+        <input type="text" id="faceclaim" name="faceclaim"><br>
+
+        <h3>Atributos</h3>
+        <label for="for">FOR:</label><br>
+        <input type="number" id="for" name="for" value="0"><br>
+
+        <label for="des">DES:</label><br>
+        <input type="number" id="des" name="des" value="0"><br>
+
+        <label for="pre">PRE:</label><br>
+        <input type="number" id="pre" name="pre" value="0"><br>
+
+        <label for="men">MEN:</label><br>
+        <input type="number" id="men" name="men" value="0"><br>
+
+        <label for="alm">ALM:</label><br>
+        <input type="number" id="alm" name="alm" value="0"><br>
+
+        <label for="con">CON:</label><br>
+        <input type="number" id="con" name="con" value="0"><br>
+
+        <label for="ref">REF:</label><br>
+        <input type="number" id="ref" name="ref" value="0"><br>
+
+        <label for="gua">GUA:</label><br>
+        <input type="number" id="gua" name="gua" value="0"><br>
+
+        <label for="aur">AUR:</label><br>
+        <input type="number" id="aur" name="aur" value="0"><br>
+
+        <label for="bio">BIO:</label><br>
+        <input type="number" id="bio" name="bio" value="0"><br>
+
+        <h3>Habilidades</h3>
+        <div id="skills-container">
+            <div class="skill-row">
+                <label for="skill1">Habilidade 1:</label><br>
+                <input type="text" class="skill-name" placeholder="Nome da habilidade"><br>
+                <input type="number" class="skill-value" placeholder="Nível da habilidade" value="0"><br>
+                <span class="remove-skill">Remover</span>
+            </div>
+        </div>
+        <button type="button" id="add-skill" class="add-skill">Adicionar Habilidade</button>
+
+        <button type="button" id="generate">Gerar Ficha de Personagem</button>
+    </form>
+
+    <h2>Ficha de Personagem Gerada</h2>
+    <textarea id="generated-code" rows="20" cols="80" readonly></textarea>
+    <button type="button" id="copy-generated">Copiar Ficha</button>
+
+    <h2>Resultado do Cálculo de XP</h2>
+    <textarea id="xp-json" rows="20" cols="80" readonly></textarea>
+    <button type="button" id="copy-xp">Copiar XP</button>
+
+    <script src="renderer.js"></script>
+</body>
+</html>
+
