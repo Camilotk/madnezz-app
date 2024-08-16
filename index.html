@@ -4,92 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Character Sheet Generator</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .one { width: 95%; background-color: #333; }
         .skill-row { margin-bottom: 10px; }
         .remove-skill { cursor: pointer; color: red; }
         .add-skill { cursor: pointer; color: green; }
     </style>
 </head>
 <body>
-    <h1>Gerador de Ficha de Personagem</h1>
+    <div class="container mt-5">
+        <h1 class="mb-4">Gerador de Ficha de Personagem</h1>
 
-    <!-- Form for Input -->
-    <form id="character-form">
-        <label for="name">Nome:</label><br>
-        <input type="text" id="name" name="name"><br>
-
-        <label for="group">Grupo:</label><br>
-        <input type="text" id="group" name="group"><br>
-
-        <label for="class">Classe:</label><br>
-        <input type="text" id="class" name="class"><br>
-
-        <label for="age">Idade:</label><br>
-        <input type="number" id="age" name="age"><br>
-
-        <label for="occupation">Ocupação:</label><br>
-        <input type="text" id="occupation" name="occupation"><br>
-
-        <label for="profession">Profissão:</label><br>
-        <input type="text" id="profession" name="profession"><br>
-
-        <label for="faceclaim">Faceclaim:</label><br>
-        <input type="text" id="faceclaim" name="faceclaim"><br>
-
-        <h3>Atributos</h3>
-        <label for="for">FOR:</label><br>
-        <input type="number" id="for" name="for" value="0"><br>
-
-        <label for="des">DES:</label><br>
-        <input type="number" id="des" name="des" value="0"><br>
-
-        <label for="pre">PRE:</label><br>
-        <input type="number" id="pre" name="pre" value="0"><br>
-
-        <label for="men">MEN:</label><br>
-        <input type="number" id="men" name="men" value="0"><br>
-
-        <label for="alm">ALM:</label><br>
-        <input type="number" id="alm" name="alm" value="0"><br>
-
-        <label for="con">CON:</label><br>
-        <input type="number" id="con" name="con" value="0"><br>
-
-        <label for="ref">REF:</label><br>
-        <input type="number" id="ref" name="ref" value="0"><br>
-
-        <label for="gua">GUA:</label><br>
-        <input type="number" id="gua" name="gua" value="0"><br>
-
-        <label for="aur">AUR:</label><br>
-        <input type="number" id="aur" name="aur" value="0"><br>
-
-        <label for="bio">BIO:</label><br>
-        <input type="number" id="bio" name="bio" value="0"><br>
-
-        <h3>Habilidades</h3>
-        <div id="skills-container">
-            <div class="skill-row">
-                <label for="skill1">Habilidade 1:</label><br>
-                <input type="text" class="skill-name" placeholder="Nome da habilidade"><br>
-                <input type="number" class="skill-value" placeholder="Nível da habilidade" value="0"><br>
-                <span class="remove-skill">Remover</span>
+        <!-- Form for Input -->
+        <form id="character-form">
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" class="form-control" id="name" name="name">
             </div>
-        </div>
-        <button type="button" id="add-skill" class="add-skill">Adicionar Habilidade</button>
 
-        <button type="button" id="generate">Gerar Ficha de Personagem</button>
-    </form>
+            <div class="form-group">
+                <label for="group">Grupo:</label>
+                <input type="text" class="form-control" id="group" name="group">
+            </div>
 
-    <h2>Ficha de Personagem Gerada</h2>
-    <textarea id="generated-code" rows="20" cols="80" readonly></textarea>
-    <button type="button" id="copy-generated">Copiar Ficha</button>
+            <div class="form-group">
+                <label for="class">Classe:</label>
+                <input type="text" class="form-control" id="class" name="class">
+            </div>
 
-    <h2>Resultado do Cálculo de XP</h2>
-    <textarea id="xp-json" rows="20" cols="80" readonly></textarea>
-    <button type="button" id="copy-xp">Copiar XP</button>
+            <div class="form-group">
+                <label for="age">Idade:</label>
+                <input type="number" class="form-control" id="age" name="age">
+            </div>
 
+            <div class="form-group">
+                <label for="occupation">Ocupação:</label>
+                <input type="text" class="form-control" id="occupation" name="occupation">
+            </div>
+
+            <div class="form-group">
+                <label for="profession">Profissão:</label>
+                <input type="text" class="form-control" id="profession" name="profession">
+            </div>
+
+            <div class="form-group">
+                <label for="faceclaim">Faceclaim:</label>
+                <input type="text" class="form-control" id="faceclaim" name="faceclaim">
+            </div>
+
+            <div class="form-group">
+                <label for="history">História do Personagem:</label>
+                <textarea class="form-control" id="history" name="history" rows="3"></textarea>
+            </div>
+
+            <h3>Atributos</h3>
+
+            <div class="form-group">
+                <label for="for">FOR:</label>
+                <input type="number" class="form-control" id="for" name="for" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="des">DES:</label>
+                <input type="number" class="form-control" id="des" name="des" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="pre">PRE:</label>
+                <input type="number" class="form-control" id="pre" name="pre" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="men">MEN:</label>
+                <input type="number" class="form-control" id="men" name="men" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="alm">ALM:</label>
+                <input type="number" class="form-control" id="alm" name="alm" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="con">CON:</label>
+                <input type="number" class="form-control" id="con" name="con" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="ref">REF:</label>
+                <input type="number" class="form-control" id="ref" name="ref" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="gua">GUA:</label>
+                <input type="number" class="form-control" id="gua" name="gua" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="aur">AUR:</label>
+                <input type="number" class="form-control" id="aur" name="aur" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="bio">BIO:</label>
+                <input type="number" class="form-control" id="bio" name="bio" value="0">
+            </div>
+
+            <h3>Habilidades</h3>
+            <p><ins>Coloque as passivas como 1 e as gratuitas como 0</ins></p>
+
+            <div id="skills-container">
+                <div class="skill-row form-group">
+                    <label for="skill1">Habilidade 1:</label>
+                    <input type="text" class="form-control skill-name" placeholder="Nome da habilidade">
+                    <input type="number" class="form-control skill-value" placeholder="Nível da habilidade" value="0">
+                    <span class="remove-skill">Remover</span>
+                </div>
+            </div>
+            <button type="button" id="add-skill" class="btn btn-success mb-3 add-skill">Adicionar Habilidade</button>
+
+            <button type="button" id="generate" class="btn btn-primary">Gerar Ficha de Personagem</button>
+        </form>
+
+        <h2 class="mt-5">Ficha de Personagem Gerada</h2>
+        <textarea id="generated-code" class="form-control mb-3" rows="10" readonly></textarea>
+        <button type="button" id="copy-generated" class="btn btn-secondary mb-5">Copiar Ficha</button>
+
+        <h2>Resultado do Cálculo de XP</h2>
+        <textarea id="xp-json" class="form-control mb-3" rows="10" readonly></textarea>
+        <button type="button" id="copy-xp" class="btn btn-secondary">Copiar XP</button>
+    </div>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>

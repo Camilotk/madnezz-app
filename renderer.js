@@ -26,6 +26,7 @@ document.getElementById('generate').addEventListener('click', () => {
   const occupation = document.getElementById('occupation').value;
   const profession = document.getElementById('profession').value;
   const faceclaim = document.getElementById('faceclaim').value;
+  const characterHistory = document.getElementById('history').value;
 
   // Get attribute values
   const atributos = {
@@ -55,12 +56,13 @@ document.getElementById('generate').addEventListener('click', () => {
     }
   }
 
-  // Calculate XP and generate character sheet
-  const resultado = calcularXP(atributos, habilidades);
-  const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, resultado.custoTotalXP);
-
+  // Generate character sheet
+  const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory);
   document.getElementById('generated-code').textContent = characterSheetHTML;
-  document.getElementById('xp-json').textContent = JSON.stringify(resultado, null, 2);
+
+  const xpResult = JSON.stringify(calcularXP(atributos, habilidades), null, 2);
+  document.getElementById('xp-json').textContent = xpResult;
+
 });
 
 document.getElementById('copy-generated').addEventListener('click', () => {
@@ -153,11 +155,11 @@ function calcularCustoHabilidades(habilidades) {
   }, 0);
 }
 
-function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, xpSum) {
+function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory) {
   let habilidadesHTML = '';
-    for (const [skill, level] of Object.entries(habilidades)) {
-        habilidadesHTML += `<b>${skill} —</b> ${level}<br>`;
-    }
+  for (const [skill, level] of Object.entries(habilidades)) {
+    habilidadesHTML += `<b>${skill} —</b> ${level}<br>`;
+  }
 
   return `[dohtml]<style>.one {width: 95%; background-color: #333;}</style>
 <div id="holdapp">
@@ -209,8 +211,9 @@ function gerarFicha(name, group, classType, age, occupation, profession, facecla
 <div class="tituloapp2"><strong>História</strong></div>
 
 <div class="jarzietext">
-A história do seu personagem. Como ele é? De onde veio? Como descobriu sua verdadeira natureza? Esteve presente nos conflitos das últimas duas décadas? Como reagiu? Não se limite na hora de criar o passado do seu personagem. </div><p><p>
-
+${characterHistory}
+</div>
+<p><p>
 <div class="tituloapp2"><strong>Atributos</strong></div>
 <div class="jarzietext"><center><table style="padding: 20px 30px;"><tr>
 <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.FOR}</div><p><p> FOR </td>
