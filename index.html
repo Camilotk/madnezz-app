@@ -6,6 +6,7 @@
     <title>Character Sheet Generator</title>
     <!-- Include Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .skill-row { margin-bottom: 10px; }
         .remove-skill { cursor: pointer; color: red; }
@@ -25,7 +26,18 @@
 
             <div class="form-group">
                 <label for="group">Grupo:</label>
-                <input type="text" class="form-control" id="group" name="group">
+                <select class="form-control" id="group" name="group">
+                    <option value="Bióticos">Bióticos</option>
+                    <option value="Caçador">Caçador</option>
+                    <option value="Ciborgue">Ciborgue</option>
+                    <option value="Feiticeiro">Feiticeiro</option>
+                    <option value="Górgona">Górgona</option>
+                    <option value="Metamorfo">Metamorfo</option>
+                    <option value="Licantropo">Licantropo</option>
+                    <option value="Sereiano">Sereiano</option>
+                    <option value="Vampiro">Vampiro</option>
+                    <option value="Parademônio">Parademônio</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -40,7 +52,17 @@
 
             <div class="form-group">
                 <label for="occupation">Ocupação:</label>
-                <input type="text" class="form-control" id="occupation" name="occupation">
+                <select class="form-control" id="occupation" name="occupation">
+                    <option value="Bruxo">Bruxo</option>
+                    <option value="Draconiano">Draconiano</option>
+                    <option value="Independente">Independente</option>
+                    <option value="Insano">Insano</option>
+                    <option value="Irmão do Sangue">Irmão do Sangue</option>
+                    <option value="Lótus">Lótus</option>
+                    <option value="Mago">Mago</option>
+                    <option value="Mercenário">Mercenário</option>
+                    <option value="Prospecto Ceremorfo">Prospecto Ceremorfo</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -139,7 +161,18 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="renderer.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#group').select2();
+
+            $('#occupation').select2({
+                placeholder: "Selecione uma ocupação",
+                allowClear: true
+            });
+        });
+    </script>
 </body>
 </html>
 
