@@ -27,6 +27,7 @@
             <div class="form-group">
                 <label for="group">Grupo:</label>
                 <select class="form-control" id="group" name="group">
+                    <option></option>
                     <option value="Bióticos">Bióticos</option>
                     <option value="Caçador">Caçador</option>
                     <option value="Ciborgue">Ciborgue</option>
@@ -43,6 +44,7 @@
             <div class="form-group">
                 <label for="class">Classe:</label>
                 <select class="form-control" id="class" name="class">
+                    <option></option>
                     <option value="Lutador">Lutador</option>
                     <option value="Atirador">Atirador</option>
                     <option value="Controlador">Controlador</option>
@@ -61,6 +63,7 @@
             <div class="form-group">
                 <label for="occupation">Ocupação:</label>
                 <select class="form-control" id="occupation" name="occupation">
+                    <option></option>
                     <option value="Bruxo">Bruxo</option>
                     <option value="Draconiano">Draconiano</option>
                     <option value="Independente">Independente</option>
@@ -174,12 +177,12 @@
     <script>
         $(document).ready(function() {
             $('#group').select2({
-                placeholder: "Selecione uma ocupação",
+                placeholder: "Selecione uma grupo",
                 allowClear: true
             });
 
             $('#class').select2({
-                placeholder: "Selecione uma ocupação",
+                placeholder: "Selecione uma classe",
                 allowClear: true
             });
 
