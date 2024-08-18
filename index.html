@@ -7,7 +7,6 @@
     <!-- Include Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
     <style>
         .skill-row { margin-bottom: 10px; }
         .remove-skill { cursor: pointer; color: red; }
@@ -170,17 +169,14 @@
     </div>
 
     <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
     <script src="renderer.js"></script>
     <script>
         $(document).ready(function() {
-            const quill = new Quill('#history', {
-              theme: 'snow'
-            });
             $('#group').select2({
                 placeholder: "Selecione uma grupo",
                 allowClear: true
@@ -195,6 +191,7 @@
                 placeholder: "Selecione uma ocupação",
                 allowClear: true
             });
+            CKEDITOR.replace('editor');
         });
     </script>
 </body>
