@@ -26,7 +26,10 @@ document.getElementById('generate').addEventListener('click', () => {
   const occupation = document.getElementById('occupation').value;
   const profession = document.getElementById('profession').value;
   const faceclaim = document.getElementById('faceclaim').value;
-  const characterHistory = document.getElementById('history').value;
+
+  // Get history
+  // let editorData = CKEDITOR.instances.editor1.getData();
+  // const characterHistory = editorData;
 
   // Get attribute values
   const atributos = {
@@ -57,6 +60,7 @@ document.getElementById('generate').addEventListener('click', () => {
   }
 
   // Generate character sheet
+  let characterHistory = window.editor.getData();
   const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory);
   document.getElementById('generated-code').textContent = characterSheetHTML;
 

@@ -7,10 +7,12 @@
     <!-- Include Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.css">
     <style>
         .skill-row { margin-bottom: 10px; }
         .remove-skill { cursor: pointer; color: red; }
         .add-skill { cursor: pointer; color: green; }
+        .ck-editor__editable_inline:not(.ck-comment__input *) { height: 250px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -169,12 +171,45 @@
     </div>
 
     <!-- Include Bootstrap JS and dependencies -->
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="renderer.js"></script>
+    <script type="importmap">
+			{
+				"imports": {
+					"ckeditor5": "https://cdn.ckeditor.com/ckeditor5/43.0.0/ckeditor5.js",
+					"ckeditor5/": "https://cdn.ckeditor.com/ckeditor5/43.0.0/"
+				}
+			}
+		</script>
+		<script type="module">
+			import {
+				ClassicEditor,
+				Essentials,
+				Paragraph,
+				Bold,
+				Italic,
+				Font,
+        SourceEditing,
+        RemoveFormat
+			} from 'ckeditor5';
+			ClassicEditor
+				.create( document.querySelector( '#history' ), {
+					plugins: [ SourceEditing, RemoveFormat, Essentials, Paragraph, Bold, Italic, Font ],
+					toolbar: [
+						'undo', 'redo', '|', 'bold', 'italic', '|',
+						'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'removeFormat', 'sourceEditing'
+					]
+				} )
+				.then( editor => {
+					window.editor = editor;
+				} )
+				.catch( error => {
+					console.error( error );
+				} );
+		</script>
     <script>
         $(document).ready(function() {
             $('#group').select2({
