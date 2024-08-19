@@ -31,7 +31,7 @@ function validateForm() {
   // Clear previous alerts
   document.getElementById('alert-container').innerHTML = '';
 
-  const errors = []; // Array to accumulate error messages
+  const errors = ['Sua ficha contêm erros:']; // Array to accumulate error messages
 
   const name = document.getElementById('name').value.trim();
   const group = document.getElementById('group').value;
@@ -55,13 +55,13 @@ function validateForm() {
     errors.push('Você deve entrar uma idade');
   }
   if (['Vampiro', 'Biótico', 'Parademonio'].includes(group) && age > 1000) {
-    errors.push('Sua idade é alta demais para seu grupo');
+    errors.push('Sua idade é alta demais para seu grupo. O máximo é 1000 anos.');
   }
   if (['Licantropo', 'Sereiano', 'Metamorfo'].includes(group) && age > 300) {
-    errors.push('Sua idade é alta demais para seu grupo');
+    errors.push('Sua idade é alta demais para seu grupo. O máximo é 300 anos.');
   }
   if (['Górgona', 'Feiticeiro'].includes(group) && age > 200) {
-    errors.push('Sua idade é alta demais para seu grupo');
+    errors.push('Sua idade é alta demais para seu grupo. O máximo é 200 anos.');
   }
   if (!occupation) {
     errors.push('Você deve selecionar uma ocupação');
