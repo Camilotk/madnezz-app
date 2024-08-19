@@ -154,7 +154,7 @@ document.getElementById('generate').addEventListener('click', () => {
   const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory);
   document.getElementById('generated-code').textContent = characterSheetHTML;
 
-  let photoplayerCode = gerarPPCode(name, faceclaim);
+  let photoplayerCode = gerarPPCode(name, faceclaim, group);
   document.getElementById('photoplayerRegistry').placeholder = photoplayerCode;
 
   const xpResult = JSON.stringify(calcularXP(atributos, habilidades), null, 2);
@@ -162,8 +162,26 @@ document.getElementById('generate').addEventListener('click', () => {
 
 });
 
-function gerarPPCode(nome, faceclaim) {
-  return `[CODE]<b><grupo>${faceclaim.toUpperCase() || 'NOME DO PHOTOPLAYER'}</grupo></b><br> ${nome || 'Nome Personagem'}<br>[/CODE]`;
+function transformarString(grupo) {
+  const transformacoes = {
+    "Bióticos": "biotico",
+    "Caçador": "cacador",
+    "Ciborgue": "ciborgue",
+    "Feiticeiro": "feiticeiro",
+    "Górgonas": "gorgona",
+    "Metamorfos": "metamorfo",
+    "Licantropos": "licantropo",
+    "Sereianos": "sereiano",
+    "Vampiros": "vampiro",
+    "Demônio": "demonio",
+    "Parademônio": "parademonio"
+  };
+
+  return transformacoes[grupo] || grupo;
+}
+
+function gerarPPCode(nome, faceclaim, grupo) {
+  return `[CODE]<b><${transformarString(grupo) || 'grupo'}>${faceclaim.toUpperCase() || 'NOME DO PHOTOPLAYER'}</${transformarString(grupo) || 'grupo'}></b><br> ${nome || 'Nome Personagem'}<br>[/CODE]`;
 }
 
 document.getElementById('copy-generated').addEventListener('click', () => {
