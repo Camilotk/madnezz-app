@@ -20,6 +20,7 @@ document.getElementById('add-skill').addEventListener('click', () => {
 function displayAlert(message, type) {
   const alertContainer = document.getElementById('alert-container');
   alertContainer.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show mt-5" role="alert">
+            <p>Sua ficha tem erros:</p>
             ${message}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -41,8 +42,6 @@ function validateForm() {
   const profession = document.getElementById('profession').value.trim();
   const faceclaim = document.getElementById('faceclaim').value.trim();
   const history = window.editor.getData().trim();
-
-  errors.push('Sua ficha tem erros:');
 
   if (!name) {
     errors.push('- Nome está em branco.');
