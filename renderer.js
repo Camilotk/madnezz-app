@@ -95,9 +95,9 @@ function validateForm() {
   // console.log({ "XP Restante": result.xpRestante, "Result": JSON.stringify(result) })
 
   if (xp_restante > 0) {
-    errors.push(`Você tem ${xp_restante} XP sobrando, o XP tem que ser 0`);
+    errors.push(`Você tem ${xp_restante} XP sobrando, o XP tem que ser 0. Gaste os ${xp_restante} restantes.`);
   } else if (xp_restante < 0) {
-    errors.push(`Você tem ${Math.abs(xp_restante)} XP a mais, o XP tem que ser 0`);
+    errors.push(`Você gastou ${Math.abs(xp_restante)} XP a mais, o XP tem que ser 0. Reduza ${Math.abs(xp_restante)} do seu gasto`);
   }
 
   // Display all accumulated error messages
