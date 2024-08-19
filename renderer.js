@@ -220,7 +220,14 @@ document.getElementById('copy-xp').addEventListener('click', () => {
 document.getElementById('copy-pp').addEventListener('click', () => {
   const generatedCode = document.getElementById('photoplayerRegistry');
   navigator.clipboard.writeText(generatedCode.placeholder).then(() => {
-    alert('Ficha copiada para a área de transferência!');
+    alert('Photoplayer copiado para a área de transferência!');
+  });
+});
+
+document.getElementById('copy-oc').addEventListener('click', () => {
+  const generatedCode = document.getElementById('occupationRegistry');
+  navigator.clipboard.writeText(generatedCode.placeholder).then(() => {
+    alert('Ocupação copiado para a área de transferência!');
   });
 });
 
