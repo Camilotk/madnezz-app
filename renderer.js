@@ -17,7 +17,100 @@ document.getElementById('add-skill').addEventListener('click', () => {
   });
 });
 
+function displayAlert(message, type) {
+  const alertContainer = document.getElementById('alert-container');
+  alertContainer.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`;
+}
+
+function validateForm() {
+  // Clear previous alerts
+  document.getElementById('alert-container').innerHTML = '';
+
+  const errors = []; // Array to accumulate error messages
+
+  const name = document.getElementById('name').value.trim();
+  const group = document.getElementById('group').value;
+  const classType = document.getElementById('class').value;
+  const age = parseInt(document.getElementById('age').value) || 0;
+  const occupation = document.getElementById('occupation').value;
+  const profession = document.getElementById('profession').value.trim();
+  const faceclaim = document.getElementById('faceclaim').value.trim();
+  const history = window.editor.getData().trim();
+
+  if (!name) {
+    errors.push('Nome está em branco');
+  }
+  if (!group) {
+    errors.push('Você deve selecionar um grupo');
+  }
+  if (!classType) {
+    errors.push('Você deve selecionar uma classe');
+  }
+  if (!age) {
+    errors.push('Você deve entrar uma idade');
+  }
+  if (['Vampiro', 'Biótico', 'Parademonio'].includes(group) && age > 1000) {
+    errors.push('Sua idade é alta demais para seu grupo');
+  }
+  if (['Licantropo', 'Sereiano', 'Metamorfo'].includes(group) && age > 300) {
+    errors.push('Sua idade é alta demais para seu grupo');
+  }
+  if (['Górgona', 'Feiticeiro'].includes(group) && age > 200) {
+    errors.push('Sua idade é alta demais para seu grupo');
+  }
+  if (!occupation) {
+    errors.push('Você deve selecionar uma ocupação');
+  }
+  if (!profession) {
+    errors.push('Você deve entrar uma profissão');
+  }
+  if (!faceclaim) {
+    errors.push('Você deve entrar um faceclaim');
+  }
+  if (!history) {
+    errors.push('Você deve entrar uma história de personagem');
+  }
+
+  // Calculate XP
+  const result = calcularXP({
+    FOR: parseInt(document.getElementById('for').value) || 0,
+    DES: parseInt(document.getElementById('des').value) || 0,
+    PRE: parseInt(document.getElementById('pre').value) || 0,
+    MEN: parseInt(document.getElementById('men').value) || 0,
+    ALM: parseInt(document.getElementById('alm').value) || 0,
+    CON: parseInt(document.getElementById('con').value) || 0,
+    REF: parseInt(document.getElementById('ref').value) || 0,
+    GUA: parseInt(document.getElementById('gua').value) || 0,
+    AUR: parseInt(document.getElementById('aur').value) || 0,
+    BIO: parseInt(document.getElementById('bio').value) || 0
+  }, Object.values(document.querySelectorAll('.skill-value')).map(e => parseInt(e.value) || 0));
+
+  const xp_restante = result.xpRestante;
+
+  // console.log({ "XP Restante": result.xpRestante, "Result": JSON.stringify(result) })
+
+  if (xp_restante > 0) {
+    errors.push(`Você tem ${xp_restante} XP sobrando, o XP tem que ser 0`);
+  } else if (xp_restante < 0) {
+    errors.push(`Você tem ${Math.abs(xp_restante)} XP a mais, o XP tem que ser 0`);
+  }
+
+  // Display all accumulated error messages
+  if (errors.length > 0) {
+    displayAlert(errors.join('<br>'), 'danger');
+    return false; // Prevent form submission if there are errors
+  }
+
+  return true; // Form is valid
+}
+
 document.getElementById('generate').addEventListener('click', () => {
+  validateForm();
   // Get form data
   const name = document.getElementById('name').value;
   const group = document.getElementById('group').value;
