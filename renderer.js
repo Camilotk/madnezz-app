@@ -19,7 +19,7 @@ document.getElementById('add-skill').addEventListener('click', () => {
 
 function displayAlert(message, type) {
   const alertContainer = document.getElementById('alert-container');
-  alertContainer.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+  alertContainer.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show mt-5" role="alert">
             ${message}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -31,7 +31,7 @@ function validateForm() {
   // Clear previous alerts
   document.getElementById('alert-container').innerHTML = '';
 
-  const errors = ['Sua ficha contêm erros:']; // Array to accumulate error messages
+  const errors = []; // Array to accumulate error messages
 
   const name = document.getElementById('name').value.trim();
   const group = document.getElementById('group').value;
@@ -42,38 +42,40 @@ function validateForm() {
   const faceclaim = document.getElementById('faceclaim').value.trim();
   const history = window.editor.getData().trim();
 
+  errors.push('Sua ficha tem erros:');
+
   if (!name) {
-    errors.push('Nome está em branco');
+    errors.push('- Nome está em branco.');
   }
   if (!group) {
-    errors.push('Você deve selecionar um grupo');
+    errors.push('- Você deve selecionar um grupo.');
   }
   if (!classType) {
-    errors.push('Você deve selecionar uma classe');
+    errors.push('- Você deve selecionar uma classe.');
   }
   if (!age) {
-    errors.push('Você deve entrar uma idade');
+    errors.push('- Você deve entrar uma idade.');
   }
   if (['Vampiro', 'Biótico', 'Parademonio'].includes(group) && age > 1000) {
-    errors.push('Sua idade é alta demais para seu grupo. O máximo é 1000 anos.');
+    errors.push('- Sua idade é alta demais para seu grupo. O máximo é 1000 anos.');
   }
   if (['Licantropo', 'Sereiano', 'Metamorfo'].includes(group) && age > 300) {
-    errors.push('Sua idade é alta demais para seu grupo. O máximo é 300 anos.');
+    errors.push('- Sua idade é alta demais para seu grupo. O máximo é 300 anos.');
   }
   if (['Górgona', 'Feiticeiro'].includes(group) && age > 200) {
-    errors.push('Sua idade é alta demais para seu grupo. O máximo é 200 anos.');
+    errors.push('- Sua idade é alta demais para seu grupo. O máximo é 200 anos.');
   }
   if (!occupation) {
-    errors.push('Você deve selecionar uma ocupação');
+    errors.push('- Você deve selecionar uma ocupação.');
   }
   if (!profession) {
-    errors.push('Você deve entrar uma profissão');
+    errors.push('- Você deve entrar uma profissão.');
   }
   if (!faceclaim) {
-    errors.push('Você deve entrar um faceclaim');
+    errors.push('- Você deve entrar um faceclaim.');
   }
   if (!history) {
-    errors.push('Você deve entrar uma história de personagem');
+    errors.push('- Você deve entrar uma história de personagem.');
   }
 
   // Calculate XP
@@ -95,9 +97,9 @@ function validateForm() {
   // console.log({ "XP Restante": result.xpRestante, "Result": JSON.stringify(result) })
 
   if (xp_restante > 0) {
-    errors.push(`Você tem ${xp_restante} XP sobrando, o XP tem que ser 0. Gaste os ${xp_restante} restantes.`);
+    errors.push(`- Você tem ${xp_restante} XP sobrando, o XP tem que ser 0. Gaste os ${xp_restante} restantes.`);
   } else if (xp_restante < 0) {
-    errors.push(`Você gastou ${Math.abs(xp_restante)} XP a mais, o XP tem que ser 0. Reduza ${Math.abs(xp_restante)} do seu gasto`);
+    errors.push(`- Você gastou ${Math.abs(xp_restante)} XP a mais, o XP tem que ser 0. Reduza ${Math.abs(xp_restante)} do seu gasto`);
   }
 
   // Display all accumulated error messages
