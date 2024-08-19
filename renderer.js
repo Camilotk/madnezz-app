@@ -5,7 +5,7 @@ document.getElementById('add-skill').addEventListener('click', () => {
   skillRow.classList.add('skill-row');
   skillRow.innerHTML = `
         <label for="skill${skillCount}">Habilidade ${skillCount}:</label><br>
-        <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
+        <input type="text" class="form-control skill-name  mb-3" placeholder="Nome da habilidade">
         <input type="number" class="form-control skill-value" placeholder="Nível da habilidade" value="0">
         <span class="remove-skill">Remover</span>
     `;
