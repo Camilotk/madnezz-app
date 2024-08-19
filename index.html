@@ -88,8 +88,19 @@
                 <input type="text" class="form-control" id="faceclaim" name="faceclaim">
             </div>
 
+            <h3>Imagem</h3>
+            
             <div class="form-group">
-                <label for="history">História do Personagem:</label>
+              <img src="https://via.placeholder.com/200x320" id='imageFrame' class="mb-3" width="200" height="320">
+              <div class="form-row">
+                <input type="text" class="form-control col-md-9 mr-2" id="imageLink" name="imageLink" placeholder="https://via.placeholder.com/200x320">
+                <button class="btn btn-primary col-md-2" id="sendImg">Enviar</button>
+              </div>
+            </div>
+            
+            <h3>História do Personagem</h3>
+
+            <div class="form-group">
                 <textarea class="form-control" id="history" name="history" rows="3"></textarea>
             </div>
 
@@ -163,17 +174,23 @@
 
         <div id="alert-container"></div>
 
+        <hr class="mt-5">
+
         <h2 class="mt-5">Ficha de Personagem Gerada</h2>
         <textarea id="generated-code" class="form-control mb-3" rows="10" readonly></textarea>
-        <button type="button" id="copy-generated" class="btn btn-secondary mb-5">Copiar Ficha</button>
+        <button type="button" id="copy-generated" class="btn btn-secondary mb-5">Copiar</button>
 
         <h2 class="d-none">Resultado do Cálculo de XP</h2>
         <textarea id="xp-json" class="form-control mb-3 d-none" rows="10" readonly></textarea>
-        <button type="button" id="copy-xp" class="btn btn-secondary mb-5 d-none">Copiar XP</button>
+        <button type="button" id="copy-xp" class="btn btn-secondary mb-5 d-none">Copiar</button>
 
         <h2>Registro de Photoplayer</h2>
         <input type="text" class="form-control mb-3" id="photoplayerRegistry" readonly>
-        <button type="button" id="copy-pp" class="btn btn-secondary mb-5">Copiar PP</button>
+        <button type="button" id="copy-pp" class="btn btn-secondary mb-5">Copiar</button>
+
+        <h2>Registro de Ocupação</h2>
+        <input type="text" class="form-control mb-3" id="occupationRegistry" readonly>
+        <button type="button" id="copy-oc" class="btn btn-secondary mb-5">Copiar</button>
     </div>
 
     <!-- Include Bootstrap JS and dependencies -->

@@ -151,11 +151,15 @@ document.getElementById('generate').addEventListener('click', () => {
 
   // Generate character sheet
   let characterHistory = window.editor.getData();
-  const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory);
+  let characterImage = getImageLink();
+  const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, characterImage);
   document.getElementById('generated-code').textContent = characterSheetHTML;
 
   let photoplayerCode = gerarPPCode(name, faceclaim, group);
   document.getElementById('photoplayerRegistry').placeholder = photoplayerCode;
+
+  let occupationCode = gerarOCCode(name, group, occupation);
+  document.getElementById('occupationRegistry').placeholder = occupationCode;
 
   const xpResult = JSON.stringify(calcularXP(atributos, habilidades), null, 2);
   document.getElementById('xp-json').textContent = xpResult;
@@ -183,6 +187,21 @@ function transformarString(grupo) {
 function gerarPPCode(nome, faceclaim, grupo) {
   return `[CODE]<b><${transformarString(grupo) || 'grupo'}>${faceclaim.toUpperCase() || 'NOME DO PHOTOPLAYER'}</${transformarString(grupo) || 'grupo'}></b><br> ${nome || 'Nome Personagem'}<br>[/CODE]`;
 }
+
+function gerarOCCode(nome, grupo, ocupacao) {
+  return `${nome || 'Nome do Personagem'}: ${grupo || 'Grupo'}, ${ocupacao || 'Ocupação'}.`;
+}
+
+function getImageLink() {
+  const imageLink = document.getElementById('imageLink').value;
+  document.getElementById('imageFrame').src = imageLink;
+  return imageLink;
+}
+
+document.getElementById('sendImg').addEventListener('click', (e) => {
+  e.preventDefault();
+  getImageLink();
+});
 
 document.getElementById('copy-generated').addEventListener('click', () => {
   const generatedCode = document.getElementById('generated-code');
@@ -281,7 +300,7 @@ function calcularCustoHabilidades(habilidades) {
   }, 0);
 }
 
-function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory) {
+function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, imageLink) {
   let habilidadesHTML = '';
   for (const [skill, level] of Object.entries(habilidades)) {
     habilidadesHTML += `<b>${skill} —</b> ${level}<br>`;
@@ -330,7 +349,7 @@ function gerarFicha(name, group, classType, age, occupation, profession, facecla
 <div class="appskillscontainer">
 <div class="appskills one">${faceclaim}</div>
 </div>
-</td><td><img src="https://via.placeholder.com/200x320" class="mad_imagem"></td>
+</td><td><img src="${imageLink || 'https://via.placeholder.com/200x320'}" class="mad_imagem"></td>
 
 </tr></table></center></div><p><p>
 
