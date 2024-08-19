@@ -5,7 +5,7 @@ document.getElementById('add-skill').addEventListener('click', () => {
   skillRow.classList.add('skill-row');
   skillRow.innerHTML = `
         <label for="skill${skillCount}">Habilidade ${skillCount}:</label><br>
-        <input type="text" class="form-control skill-name" placeholder="Nome da habilidade">
+        <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
         <input type="number" class="form-control skill-value" placeholder="Nível da habilidade" value="0">
         <span class="remove-skill">Remover</span>
     `;
@@ -120,10 +120,6 @@ document.getElementById('generate').addEventListener('click', () => {
   const profession = document.getElementById('profession').value;
   const faceclaim = document.getElementById('faceclaim').value;
 
-  // Get history
-  // let editorData = CKEDITOR.instances.editor1.getData();
-  // const characterHistory = editorData;
-
   // Get attribute values
   const atributos = {
     FOR: parseInt(document.getElementById('for').value) || 0,
@@ -157,10 +153,17 @@ document.getElementById('generate').addEventListener('click', () => {
   const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory);
   document.getElementById('generated-code').textContent = characterSheetHTML;
 
+  let photoplayerCode = gerarPPCode(name, faceclaim);
+  document.getElementById('photoplayerRegistry').placeholder = photoplayerCode;
+
   const xpResult = JSON.stringify(calcularXP(atributos, habilidades), null, 2);
   document.getElementById('xp-json').textContent = xpResult;
 
 });
+
+function gerarPPCode(nome, faceclaim) {
+  return `[CODE]<b><grupo>${faceclaim.toUpperCase() || 'NOME DO PHOTOPLAYER'}</grupo></b><br> ${nome || 'Nome Personagem'}<br>[/CODE]`;
+}
 
 document.getElementById('copy-generated').addEventListener('click', () => {
   const generatedCode = document.getElementById('generated-code');
@@ -173,6 +176,13 @@ document.getElementById('copy-xp').addEventListener('click', () => {
   const xpJson = document.getElementById('xp-json');
   navigator.clipboard.writeText(xpJson.textContent).then(() => {
     alert('Resultado do XP copiado para a área de transferência!');
+  });
+});
+
+document.getElementById('copy-pp').addEventListener('click', () => {
+  const generatedCode = document.getElementById('photoplayerRegistry');
+  navigator.clipboard.writeText(generatedCode.placeholder).then(() => {
+    alert('Ficha copiada para a área de transferência!');
   });
 });
 

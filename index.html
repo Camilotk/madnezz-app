@@ -152,7 +152,7 @@
             <div id="skills-container">
                 <div class="skill-row form-group">
                     <label for="skill1">Habilidade 1:</label>
-                    <input type="text" class="form-control skill-name" placeholder="Nome da habilidade">
+                    <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
                     <input type="number" class="form-control skill-value" placeholder="Nível da habilidade" value="0">
                     <span class="remove-skill">Remover</span>
                 </div>
@@ -168,7 +168,11 @@
 
         <h2>Resultado do Cálculo de XP</h2>
         <textarea id="xp-json" class="form-control mb-3" rows="10" readonly></textarea>
-        <button type="button" id="copy-xp" class="btn btn-secondary">Copiar XP</button>
+        <button type="button" id="copy-xp" class="btn btn-secondary mb-5">Copiar XP</button>
+
+        <h2>Registro de Photoplayer</h2>
+        <input type="text" class="form-control mb-3" id="photoplayerRegistry" readonly>
+        <button type="button" id="copy-pp" class="btn btn-secondary mb-5">Copiar PP</button>
     </div>
 
     <!-- Include Bootstrap JS and dependencies -->
