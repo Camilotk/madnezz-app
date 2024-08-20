@@ -6,7 +6,7 @@
   "packageManager": "yarn@4.2.2",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win --x64"
+    "build": "google-closure-compiler --js renderer.js --js_output_file renderer.min.js"
   },
   "dependencies": {
     "jsdom": "^24.1.1"
@@ -14,7 +14,8 @@
   "devDependencies": {
     "electron": "^31.4.0",
     "electron-builder": "^24.13.3",
-    "electron-rebuild": "^3.2.9"
+    "electron-rebuild": "^3.2.9",
+    "google-closure-compiler": "^20240317.0.0"
   },
   "build": {
     "appId": "com.example.madnezz",
