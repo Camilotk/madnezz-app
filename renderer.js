@@ -564,12 +564,18 @@ function exportToJSON() {
       aur: document.getElementById('aur').value,
       bio: document.getElementById('bio').value
     },
-    skills: Array.from(document.querySelectorAll('.skill-row')).map(row => ({
-      name: row.querySelector('.skill-name').value,
-      value: row.querySelector('.skill-value').value,
-      passiva: row.querySelector('#passiva1').checked,
-      bonus: row.querySelector('#bonus1').checked
-    }))
+    skills: Array.from(document.querySelectorAll('.skill-row')).map((row, index) => {
+      // Use the index to find the correct checkboxes
+      const passivaCheckbox = document.querySelector(`#passiva${index + 1}`);
+      const bonusCheckbox = document.querySelector(`#bonus${index + 1}`);
+
+      return {
+        name: row.querySelector('.skill-name').value,
+        value: row.querySelector('.skill-value').value,
+        passiva: passivaCheckbox ? passivaCheckbox.checked : false,
+        bonus: bonusCheckbox ? bonusCheckbox.checked : false
+      };
+    })
   };
 
   const blob = new Blob([JSON.stringify(formData, null, 2)], { type: 'application/json' });
@@ -580,4 +586,93 @@ function exportToJSON() {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// Função para importar dados do arquivo JSON e preencher o formulário
+function importFromJSON(file) {
+  console.log("Importando dados...");
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const formData = JSON.parse(e.target.result);
+
+      // Preencher os campos do formulário
+      document.querySelector('#name').value = formData.name || '';
+      document.querySelector('#group').value = formData.group || '';
+      document.querySelector('#class').value = formData.class || '';
+      document.querySelector('#age').value = formData.age || '';
+      document.querySelector('#occupation').value = formData.occupation || '';
+      document.querySelector('#profession').value = formData.profession || '';
+      document.querySelector('#faceclaim').value = formData.faceclaim || '';
+      document.querySelector('#imageLink').value = formData.imageLink || '';
+
+      if (window.editor) {
+        window.editor.setData(formData.history || '');
+      } else {
+        document.querySelector('#history').value = formData.history || '';
+      }
+
+      // Preencher os atributos
+      const attributes = formData.attributes || {};
+      document.querySelector('#for').value = attributes.for || '1';
+      document.querySelector('#des').value = attributes.des || '1';
+      document.querySelector('#pre').value = attributes.pre || '1';
+      document.querySelector('#men').value = attributes.men || '1';
+      document.querySelector('#alm').value = attributes.alm || '1';
+      document.querySelector('#con').value = attributes.con || '1';
+      document.querySelector('#ref').value = attributes.ref || '1';
+      document.querySelector('#gua').value = attributes.gua || '1';
+      document.querySelector('#aur').value = attributes.aur || '1';
+      document.querySelector('#bio').value = attributes.bio || '1';
+
+      // Preencher as habilidades
+      const skillsContainer = document.querySelector('#skills-container');
+      skillsContainer.innerHTML = ''; // Limpar habilidades existentes
+
+      if (Array.isArray(formData.skills)) {
+        formData.skills.forEach((skill, index) => {
+          const skillRow = document.createElement('div');
+          skillRow.className = 'skill-row form-group mb-3';
+          skillRow.innerHTML = `
+                <label for="skill${index + 1}" class="form-label">Habilidade ${index + 1}:</label>
+                <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade" value="${skill.name || ''}">
+                <input type="number" class="form-control skill-value mb-3" placeholder="Nível da habilidade" value="${skill.value || 0}" min="0" max="10">
+                <div class="row">
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="passiva${index + 1}" name="passiva${index + 1}" ${skill.passiva ? 'checked' : ''}>
+                            <label class="form-check-label" for="passiva${index + 1}">Passiva</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="bonus${index + 1}" name="bonus${index + 1}" ${skill.bonus ? 'checked' : ''}>
+                            <label class="form-check-label" for="bonus${index + 1}">Bonus</label>
+                        </div>
+                    </div>
+                </div>
+                <span class="remove-skill text-danger" style="cursor: pointer;">Remover</span>
+            `;
+          skillsContainer.appendChild(skillRow);
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao ler o arquivo JSON:', error);
+      alert('Erro ao processar o arquivo JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Adicionar o event listener para o botão de importação
+document.querySelector('#import').addEventListener('click', function () {
+  console.log("Click")
+  const fileInput = document.querySelector('#importFile');
+  if (fileInput.files.length > 0) {
+    importFromJSON(fileInput.files[0]);
+  } else {
+    alert('Nenhum arquivo selecionado para importar.');
+  }
+});
 
