@@ -98,12 +98,9 @@ function toggleCheckbox(selectedId, otherId) {
 function displayAlert(message, type) {
   const alertContainer = document.getElementById('alert-container');
   alertContainer.innerHTML = `
-        <div class="alert alert-${type} alert-dismissible fade show mt-5" role="alert">
+        <div class="alert alert-${type} mt-5" role="alert">
             <p>Sua ficha tem erros:</p>
             ${message}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
         </div>
     `;
 }
@@ -589,7 +586,6 @@ function exportToJSON() {
 
 // Função para importar dados do arquivo JSON e preencher o formulário
 function importFromJSON(file) {
-  console.log("Importando dados...");
   if (!file) return;
 
   const reader = new FileReader();
@@ -672,7 +668,6 @@ function importFromJSON(file) {
 
 // Adicionar o event listener para o botão de importação
 document.querySelector('#import').addEventListener('click', function () {
-  console.log("Click")
   const fileInput = document.querySelector('#importFile');
   if (fileInput.files.length > 0) {
     importFromJSON(fileInput.files[0]);
