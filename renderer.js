@@ -535,5 +535,49 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   });
+
+  // Get the image
+  document.getElementById('export').addEventListener('click', () => exportToJSON());
 });
+
+// Função para exportar dados do formulário como JSON
+function exportToJSON() {
+  const formData = {
+    name: document.getElementById('name').value,
+    group: document.getElementById('group').value,
+    class: document.getElementById('class').value,
+    age: document.getElementById('age').value,
+    occupation: document.getElementById('occupation').value,
+    profession: document.getElementById('profession').value,
+    faceclaim: document.getElementById('faceclaim').value,
+    imageLink: document.getElementById('imageLink').value,
+    history: window.editor ? window.editor.getData() : document.getElementById('history').value,
+    attributes: {
+      for: document.getElementById('for').value,
+      des: document.getElementById('des').value,
+      pre: document.getElementById('pre').value,
+      men: document.getElementById('men').value,
+      alm: document.getElementById('alm').value,
+      con: document.getElementById('con').value,
+      ref: document.getElementById('ref').value,
+      gua: document.getElementById('gua').value,
+      aur: document.getElementById('aur').value,
+      bio: document.getElementById('bio').value
+    },
+    skills: Array.from(document.querySelectorAll('.skill-row')).map(row => ({
+      name: row.querySelector('.skill-name').value,
+      value: row.querySelector('.skill-value').value,
+      passiva: row.querySelector('#passiva1').checked,
+      bonus: row.querySelector('#bonus1').checked
+    }))
+  };
+
+  const blob = new Blob([JSON.stringify(formData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'character-sheet.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
