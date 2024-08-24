@@ -1,292 +1,13 @@
-document.getElementById('add-skill').addEventListener('click', () => {
-  const skillsContainer = document.getElementById('skills-container');
-  const skillCount = skillsContainer.getElementsByClassName('skill-row').length + 1;
+/**
+ * @fileoverview Character Sheet Generator Script.
+ * @module refactored
+ */
 
-  const skillRow = document.createElement('div');
-  skillRow.classList.add('skill-row', 'form-group', 'mb-3');
-  skillRow.innerHTML = `
-        <label for="skill${skillCount}" class="form-label">Habilidade ${skillCount}:</label>
-        <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
-        <input type="number" class="form-control skill-value mb-3" placeholder="Nível da habilidade" value="0" min="0" max="10">
-        
-        <div class="row">
-            <div class="col-md-4 d-flex align-items-center">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="passiva${skillCount}" name="passiva${skillCount}" onchange="toggleCheckbox('passiva${skillCount}', 'bonus${skillCount}')">
-                    <label class="form-check-label" for="passiva${skillCount}">Passiva</label>
-                </div>
-            </div>
+/** @type {number} Initial XP available for the character. */
+const xpInicial = 1400;
 
-            <div class="col-md-4 d-flex align-items-center">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="bonus${skillCount}" name="bonus${skillCount}" onchange="toggleCheckbox('bonus${skillCount}', 'passiva${skillCount}')">
-                    <label class="form-check-label" for="bonus${skillCount}">Bonus</label>
-                </div>
-            </div>
-        </div>
-        
-        <span class="remove-skill text-danger" style="cursor: pointer;">Remover</span>
-    `;
-
-  skillsContainer.appendChild(skillRow);
-
-  // Attach event listener to the new remove button
-  skillRow.querySelector('.remove-skill').addEventListener('click', () => {
-    skillsContainer.removeChild(skillRow);
-  });
-});
-
-function toggleCheckbox(selectedId, otherId) {
-  var selectedCheckbox = document.getElementById(selectedId);
-  var otherCheckbox = document.getElementById(otherId);
-
-  if (selectedCheckbox.checked) {
-    otherCheckbox.checked = false;
-  }
-}
-
-function displayAlert(message, type) {
-  const alertContainer = document.getElementById('alert-container');
-  alertContainer.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show mt-5" role="alert">
-            <p>Sua ficha tem erros:</p>
-            ${message}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>`;
-}
-
-function validateForm() {
-  // Clear previous alerts
-  document.getElementById('alert-container').innerHTML = '';
-
-  const errors = []; // Array to accumulate error messages
-
-  const name = document.getElementById('name').value.trim();
-  const group = document.getElementById('group').value;
-  const classType = document.getElementById('class').value;
-  const age = parseInt(document.getElementById('age').value) || 0;
-  const occupation = document.getElementById('occupation').value;
-  const profession = document.getElementById('profession').value.trim();
-  const faceclaim = document.getElementById('faceclaim').value.trim();
-  const history = window.editor.getData().trim();
-
-  if (!name) {
-    errors.push('- Nome está em branco.');
-  }
-  if (!group) {
-    errors.push('- Você deve selecionar um grupo.');
-  }
-  if (!classType) {
-    errors.push('- Você deve selecionar uma classe.');
-  }
-  if (!age) {
-    errors.push('- Você deve entrar uma idade.');
-  }
-  if (['Vampiro', 'Biótico', 'Parademonio'].includes(group) && age > 1000) {
-    errors.push('- Sua idade é alta demais para seu grupo. O máximo é 1000 anos.');
-  }
-  if (['Licantropo', 'Sereiano', 'Metamorfo'].includes(group) && age > 300) {
-    errors.push('- Sua idade é alta demais para seu grupo. O máximo é 300 anos.');
-  }
-  if (['Górgona', 'Feiticeiro'].includes(group) && age > 200) {
-    errors.push('- Sua idade é alta demais para seu grupo. O máximo é 200 anos.');
-  }
-  if (!occupation) {
-    errors.push('- Você deve selecionar uma ocupação.');
-  }
-  if (!profession) {
-    errors.push('- Você deve entrar uma profissão.');
-  }
-  if (!faceclaim) {
-    errors.push('- Você deve entrar um faceclaim.');
-  }
-  if (!history) {
-    errors.push('- Você deve entrar uma história de personagem.');
-  }
-
-  // Get skills values
-  const skillsContainer = document.getElementById('skills-container');
-  const skillRows = skillsContainer.getElementsByClassName('skill-row');
-  const habilidades = [];
-
-  for (let i = 0; i < skillRows.length; i++) {
-    processSkillRow(skillRows[i], i + 1, habilidades);
-  }
-
-  // Calculate XP (using the corrected 'habilidades' array)
-  const result = calcularXP({
-    FOR: parseInt(document.getElementById('for').value) || 0,
-    DES: parseInt(document.getElementById('des').value) || 0,
-    PRE: parseInt(document.getElementById('pre').value) || 0,
-    MEN: parseInt(document.getElementById('men').value) || 0,
-    ALM: parseInt(document.getElementById('alm').value) || 0,
-    CON: parseInt(document.getElementById('con').value) || 0,
-    REF: parseInt(document.getElementById('ref').value) || 0,
-    GUA: parseInt(document.getElementById('gua').value) || 0,
-    AUR: parseInt(document.getElementById('aur').value) || 0,
-    BIO: parseInt(document.getElementById('bio').value) || 0
-  }, habilidades); // Pass the 'habilidades' array directly
-
-  const xp_restante = result.xpRestante;
-
-  if (xp_restante > 0) {
-    errors.push(`- Você tem ${xp_restante} XP sobrando, o XP tem que ser 0. Gaste os ${xp_restante} restantes.`);
-  } else if (xp_restante < 0) {
-    errors.push(`- Você gastou ${Math.abs(xp_restante)} XP a mais, o XP tem que ser 0. Reduza ${Math.abs(xp_restante)} do seu gasto`);
-  }
-
-  // Display all accumulated error messages
-  if (errors.length > 0) {
-    displayAlert(errors.join('<br>'), 'danger');
-    return false; // Prevent form submission if there are errors
-  }
-
-  return true; // Form is valid
-}
-
-document.getElementById('generate').addEventListener('click', () => {
-  validateForm();
-  // Get form data
-  const name = document.getElementById('name').value;
-  const group = document.getElementById('group').value;
-  const classType = document.getElementById('class').value;
-  const age = document.getElementById('age').value;
-  const occupation = document.getElementById('occupation').value;
-  const profession = document.getElementById('profession').value;
-  const faceclaim = document.getElementById('faceclaim').value;
-
-  // Get attribute values
-  const atributos = {
-    FOR: parseInt(document.getElementById('for').value) || 0,
-    DES: parseInt(document.getElementById('des').value) || 0,
-    PRE: parseInt(document.getElementById('pre').value) || 0,
-    MEN: parseInt(document.getElementById('men').value) || 0,
-    ALM: parseInt(document.getElementById('alm').value) || 0,
-    CON: parseInt(document.getElementById('con').value) || 0,
-    REF: parseInt(document.getElementById('ref').value) || 0,
-    GUA: parseInt(document.getElementById('gua').value) || 0,
-    AUR: parseInt(document.getElementById('aur').value) || 0,
-    BIO: parseInt(document.getElementById('bio').value) || 0
-  };
-
-  // Get skills values
-  const skillsContainer = document.getElementById('skills-container');
-  const skillRows = skillsContainer.getElementsByClassName('skill-row');
-  const habilidades = [];
-
-  // Pass skillCount to the loop
-  for (let i = 0; i < skillRows.length; i++) {
-    processSkillRow(skillRows[i], i + 1, habilidades);
-  }
-
-  // Generate character sheet
-  let characterHistory = window.editor.getData();
-  let characterImage = getImageLink();
-  const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, characterImage);
-  document.getElementById('generated-code').textContent = characterSheetHTML;
-
-  let photoplayerCode = gerarPPCode(name, faceclaim, group);
-  document.getElementById('photoplayerRegistry').placeholder = photoplayerCode;
-
-  let occupationCode = gerarOCCode(name, group, occupation);
-  document.getElementById('occupationRegistry').placeholder = occupationCode;
-
-  const xpResult = JSON.stringify(calcularXP(atributos, habilidades), null, 2);
-  document.getElementById('xp-json').textContent = xpResult;
-
-});
-
-function transformarString(grupo) {
-  const transformacoes = {
-    "Bióticos": "biotico",
-    "Caçador": "cacador",
-    "Ciborgue": "ciborgue",
-    "Feiticeiro": "feiticeiro",
-    "Górgonas": "gorgona",
-    "Metamorfos": "metamorfo",
-    "Licantropos": "licantropo",
-    "Sereianos": "sereiano",
-    "Vampiros": "vampiro",
-    "Demônio": "demonio",
-    "Parademônio": "parademonio"
-  };
-
-  return transformacoes[grupo] || grupo;
-}
-
-function processSkillRow(row, skillCount, habilidades) {
-  const skillName = row.querySelector('.skill-name').value.trim();
-  const skillValue = parseInt(row.querySelector('.skill-value').value) || 0;
-
-  // Get the checkbox elements by their IDs (using skillCount)
-  const skillPassiveCheckbox = row.querySelector(`#passiva${skillCount}`);
-  const skillBonusCheckbox = row.querySelector(`#bonus${skillCount}`);
-
-  // Check if they are checked
-  const skillPassive = skillPassiveCheckbox.checked;
-  const skillBonus = skillBonusCheckbox.checked;
-
-  if (skillName) {
-    habilidades.push({
-      nome: skillName,
-      valor: skillValue,
-      passiva: skillPassive,
-      bonus: skillBonus
-    });
-  }
-}
-
-function gerarPPCode(nome, faceclaim, grupo) {
-  return `[CODE]<b><${transformarString(grupo) || 'grupo'}>${faceclaim.toUpperCase() || 'NOME DO PHOTOPLAYER'}</${transformarString(grupo) || 'grupo'}></b><br> ${nome || 'Nome Personagem'}<br>[/CODE]`;
-}
-
-function gerarOCCode(nome, grupo, ocupacao) {
-  return `${nome || 'Nome do Personagem'}: ${grupo || 'Grupo'}, ${ocupacao || 'Ocupação'}.`;
-}
-
-function getImageLink() {
-  const imageLink = document.getElementById('imageLink').value;
-  document.getElementById('imageFrame').src = imageLink;
-  return imageLink;
-}
-
-document.getElementById('sendImg').addEventListener('click', (e) => {
-  e.preventDefault();
-  getImageLink();
-});
-
-document.getElementById('copy-generated').addEventListener('click', () => {
-  const generatedCode = document.getElementById('generated-code');
-  navigator.clipboard.writeText(generatedCode.textContent).then(() => {
-    alert('Ficha copiada para a área de transferência!');
-  });
-});
-
-document.getElementById('copy-xp').addEventListener('click', () => {
-  const xpJson = document.getElementById('xp-json');
-  navigator.clipboard.writeText(xpJson.textContent).then(() => {
-    alert('Resultado do XP copiado para a área de transferência!');
-  });
-});
-
-document.getElementById('copy-pp').addEventListener('click', () => {
-  const generatedCode = document.getElementById('photoplayerRegistry');
-  navigator.clipboard.writeText(generatedCode.placeholder).then(() => {
-    alert('Photoplayer copiado para a área de transferência!');
-  });
-});
-
-document.getElementById('copy-oc').addEventListener('click', () => {
-  const generatedCode = document.getElementById('occupationRegistry');
-  navigator.clipboard.writeText(generatedCode.placeholder).then(() => {
-    alert('Ocupação copiado para a área de transferência!');
-  });
-});
-
-const xp_inicial = 1400;
-
-const preco_atributos = {
+/** @type {Object<number, number>} Cost of each attribute level. */
+const precoAtributos = {
   0: 0,
   1: 25,
   2: 25,
@@ -300,7 +21,8 @@ const preco_atributos = {
   10: 150,
 };
 
-const preco_habilidades = {
+/** @type {Object<number, number>} Cost of each skill level. */
+const precoHabilidades = {
   0: 0,
   1: 25,
   2: 25,
@@ -324,158 +46,494 @@ const preco_habilidades = {
   20: 300,
 };
 
-function calcularXP(atributos, habilidades) {
-  const custoTotalAtributos = calcularCustoAtributos(atributos);
-  const custoTotalHabilidades = calcularCustoHabilidades(habilidades);
-  const custoTotalXP = custoTotalAtributos + custoTotalHabilidades;
-  const xpRestante = xp_inicial - custoTotalXP;
+/**
+ * Creates a new skill row element.
+ * @param {number} skillCount - The current number of skills to set proper IDs and labels.
+ * @returns {?HTMLElement} A div element representing a skill row.
+ */
+function createSkillRow(skillCount) {
+  const skillRow = document.createElement('div');
+  skillRow.classList.add('skill-row', 'form-group', 'mb-3');
+  skillRow.innerHTML = `
+        <label for="skill${skillCount}" class="form-label">Habilidade ${skillCount}:</label>
+        <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
+        <input type="number" class="form-control skill-value mb-3" placeholder="Nível da habilidade" value="0" min="0" max="10">
+        <div class="row">
+            <div class="col-md-4 d-flex align-items-center">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="passiva${skillCount}" name="passiva${skillCount}" onchange="toggleCheckbox('passiva${skillCount}', 'bonus${skillCount}')">
+                    <label class="form-check-label" for="passiva${skillCount}">Passiva</label>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-center">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="bonus${skillCount}" name="bonus${skillCount}" onchange="toggleCheckbox('bonus${skillCount}', 'passiva${skillCount}')">
+                    <label class="form-check-label" for="bonus${skillCount}">Bonus</label>
+                </div>
+            </div>
+        </div>
+        <span class="remove-skill text-danger" style="cursor: pointer;">Remover</span>
+    `;
+  return skillRow;
+}
 
+/**
+ * Toggles between two checkboxes, ensuring only one is checked at a time.
+ * @param {string} selectedId - The ID of the checkbox that was selected.
+ * @param {string} otherId - The ID of the other checkbox that should be unchecked.
+ */
+function toggleCheckbox(selectedId, otherId) {
+  const selectedCheckbox = document.getElementById(selectedId);
+  const otherCheckbox = document.getElementById(otherId);
+  if (selectedCheckbox.checked) {
+    otherCheckbox.checked = false;
+  }
+}
+
+/**
+ * Displays an alert message.
+ * @param {string} message - The message to display.
+ * @param {string} type - The Bootstrap alert type (e.g., 'danger', 'success').
+ */
+function displayAlert(message, type) {
+  const alertContainer = document.getElementById('alert-container');
+  alertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show mt-5" role="alert">
+            <p>Sua ficha tem erros:</p>
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `;
+}
+
+/**
+ * Validates the form, checks for errors, and calculates remaining XP.
+ * @returns {boolean} Returns true if the form is valid; otherwise, false.
+ */
+function validateForm() {
+  // Clean the old errors 
+  document.getElementById('alert-container').innerHTML = '';
+
+  const errors = [];
+
+  validateBasicInfo(errors);
+  validateSkills(errors);
+
+  const xpResult = calcularXP(getAtributos(), getHabilidades());
+  const xpRestante = xpResult.xpRestante;
+
+  if (xpRestante > 0) {
+    errors.push(`- Você tem ${xpRestante} XP sobrando. Gaste os ${xpRestante} restantes.`);
+  } else if (xpRestante < 0) {
+    errors.push(`- Você gastou ${Math.abs(xpRestante)} XP a mais. Reduza ${Math.abs(xpRestante)} do seu gasto.`);
+  }
+
+  if (errors.length > 0) {
+    displayAlert(errors.join('<br>'), 'danger');
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Validates the basic form information (e.g., name, group, age).
+ * @param {Array<string>} errors - The array to accumulate error messages.
+ */
+function validateBasicInfo(errors) {
+  const name = document.getElementById('name').value.trim();
+  const group = document.getElementById('group').value;
+  const classType = document.getElementById('class').value;
+  const age = parseInt(document.getElementById('age').value, 10) || 0;
+  const occupation = document.getElementById('occupation').value;
+  const profession = document.getElementById('profession').value.trim();
+  const faceclaim = document.getElementById('faceclaim').value.trim();
+  const history = window.editor ? window.editor.getData().trim() : '';
+
+  if (!name) errors.push('- Nome está em branco.');
+  if (!group) errors.push('- Você deve selecionar um grupo.');
+  if (!classType) errors.push('- Você deve selecionar uma classe.');
+  if (!age) errors.push('- Você deve entrar uma idade.');
+  validateAgeByGroup(group, age, errors);
+  if (!occupation) errors.push('- Você deve selecionar uma ocupação.');
+  if (!profession) errors.push('- Você deve entrar uma profissão.');
+  if (!faceclaim) errors.push('- Você deve entrar um faceclaim.');
+  if (!history) errors.push('- Você deve entrar uma história de personagem.');
+}
+
+/**
+ * Validates the age based on the selected group.
+ * @param {string} group - The selected group.
+ * @param {number} age - The age of the character.
+ * @param {Array<string>} errors - The array to accumulate error messages.
+ */
+function validateAgeByGroup(group, age, errors) {
+  const ageLimits = {
+    Vampiro: 1000,
+    Biótico: 1000,
+    Parademonio: 1000,
+    Licantropo: 300,
+    Sereiano: 300,
+    Metamorfo: 300,
+    Górgona: 200,
+    Feiticeiro: 200
+  };
+
+  const maxAge = ageLimits[group];
+  if (maxAge && age > maxAge) {
+    errors.push(`- Sua idade é alta demais para seu grupo. O máximo é ${maxAge} anos.`);
+  }
+}
+
+/**
+ * Validates the skills added to the form.
+ * @param {Array<string>} errors - The array to accumulate error messages.
+ */
+function validateSkills(errors) {
+  const habilidades = getHabilidades();
+  if (habilidades.length === 0) {
+    errors.push('- Você deve adicionar pelo menos uma habilidade.');
+  }
+}
+
+/**
+ * Retrieves the attributes from the form.
+ * @returns {Object} The attributes object with values.
+ */
+function getAtributos() {
   return {
-    atributos: atributos,
-    habilidades: habilidades,
-    custoTotalAtributos: custoTotalAtributos,
-    custoTotalHabilidades: custoTotalHabilidades,
-    custoTotalXP: custoTotalXP,
-    xpRestante: xpRestante
+    FOR: parseInt(document.getElementById('for').value, 10) || 0,
+    DES: parseInt(document.getElementById('des').value, 10) || 0,
+    PRE: parseInt(document.getElementById('pre').value, 10) || 0,
+    MEN: parseInt(document.getElementById('men').value, 10) || 0,
+    ALM: parseInt(document.getElementById('alm').value, 10) || 0,
+    CON: parseInt(document.getElementById('con').value, 10) || 0,
+    REF: parseInt(document.getElementById('ref').value, 10) || 0,
+    GUA: parseInt(document.getElementById('gua').value, 10) || 0,
+    AUR: parseInt(document.getElementById('aur').value, 10) || 0,
+    BIO: parseInt(document.getElementById('bio').value, 10) || 0
   };
 }
 
-function calcularCustoAtributos(atributos) {
-  return Object.values(atributos).reduce((acc, val) => {
-    let custo = 0;
-    for (let i = 1; i <= val; i++) {
-      custo += preco_atributos[i] || 0;
-    }
-    return acc + custo;
-  }, 0);
-}
+/**
+ * Retrieves the skills from the form.
+ * @returns {Array<Object>} The list of skills with their values.
+ */
+function getHabilidades() {
+  const skillsContainer = document.getElementById('skills-container');
+  const skillRows = skillsContainer.getElementsByClassName('skill-row');
+  const habilidades = [];
 
-
-function calcularCustoHabilidades(habilidades) {
-  return habilidades.reduce((acc, habilidade) => {
-    let custo = 0;
-    const { valor, passiva, bonus } = habilidade;
-    if (passiva) {
-      custo = 25;  // Passiva always costs 25 XP
-    } else if (bonus) {
-      if (valor <= 4) {
-        custo = 0;  // Bônus is free up to level 4
-      } else {
-        for (let i = 5; i <= valor; i++) {
-          custo += preco_habilidades[i] || 0;
-        }
-      }
-    } else {
-      for (let i = 1; i <= valor; i++) {
-        custo += preco_habilidades[i] || 0;
-      }
-    }
-    return acc + custo;
-  }, 0);
-}
-
-function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, imageLink) {
-  let habilidadesHTML = '';
-  habilidades.forEach(({ nome, valor, passiva, bonus }) => {
-    if (passiva) {
-      habilidadesHTML += `<b>${nome} —</b> passiva<br>`;
-    } else if (bonus && valor <= 4) {
-      habilidadesHTML += `<b>${nome} —</b> 4<br>`;
-    } else {
-      habilidadesHTML += `<b>${nome} —</b> ${valor}<br>`;
-    }
+  Array.from(skillRows).forEach((row, index) => {
+    processSkillRow(row, index + 1, habilidades);
   });
+
+  return habilidades;
+}
+
+/**
+ * Processes a skill row to extract skill details.
+ * @param {HTMLElement} row - The row element containing skill data.
+ * @param {number} skillCount - The current skill count to ensure unique IDs.
+ * @param {Array<Object>} habilidades - The array to store processed skill objects.
+ */
+function processSkillRow(row, skillCount, habilidades) {
+  const skillName = row.querySelector('.skill-name').value.trim();
+  const skillValue = parseInt(row.querySelector('.skill-value').value, 10) || 0;
+  const skillPassive = row.querySelector(`#passiva${skillCount}`).checked;
+  const skillBonus = row.querySelector(`#bonus${skillCount}`).checked;
+
+  if (skillName) {
+    habilidades.push({ nome: skillName, valor: skillValue, passiva: skillPassive, bonus: skillBonus });
+  }
+}
+
+/**
+ * Calculates the XP required based on attributes and skills.
+ * @param {Object} atributos - The attributes object with values.
+ * @param {Array<Object>} habilidades - The list of skills with their values.
+ * @returns {Object} The XP calculation result.
+ */
+function calcularXP(atributos, habilidades) {
+  const custoTotalAtributos = calcularCusto(atributos, precoAtributos);
+  const custoTotalHabilidades = calcularCustoHabilidades(habilidades);
+  const custoTotalXP = custoTotalAtributos + custoTotalHabilidades;
+  const xpRestante = xpInicial - custoTotalXP;
+
+  return { atributos, habilidades, custoTotalAtributos, custoTotalHabilidades, custoTotalXP, xpRestante };
+}
+
+/**
+ * Calculates the cost for attributes or skills.
+ * @param {Object|Array<Object>} items - The object or array to calculate the cost for.
+ * @param {Object<number, number>} priceList - The price list object to reference.
+ * @returns {number} The total cost.
+ */
+function calcularCusto(items, priceList) {
+  return Array.isArray(items)
+    ? items.reduce((acc, item) => acc + calcularCustoAtributo(item, priceList), 0)
+    : Object.values(items).reduce((acc, val) => acc + calcularCustoAtributo(val, priceList), 0);
+}
+
+/**
+ * Calculates the cost for a single attribute.
+ * @param {number} value - The value to calculate the cost for.
+ * @param {Object<number, number>} priceList - The price list object to reference.
+ * @returns {number} The cost for the attribute.
+ */
+function calcularCustoAtributo(value, priceList) {
+  let cost = 0;
+  for (let i = 1; i <= value; i++) {
+    cost += priceList[i] || 0;
+  }
+  return cost;
+}
+
+/**
+ * Calculates the cost for skills considering passiva and bonus conditions.
+ * @param {Array<Object>} habilidades - The list of skills with their values.
+ * @returns {number} The total cost for skills.
+ */
+function calcularCustoHabilidades(habilidades) {
+  return habilidades.reduce((acc, { valor, passiva, bonus }) => {
+    if (passiva) return acc + 25;
+    if (bonus && valor <= 4) return acc;
+    return acc + calcularCustoAtributo(valor, precoHabilidades);
+  }, 0);
+}
+
+/**
+ * Generates the HTML for the character sheet.
+ * @param {string} name - The name of the character.
+ * @param {string} group - The group of the character.
+ * @param {string} classType - The class type of the character.
+ * @param {number} age - The age of the character.
+ * @param {string} occupation - The occupation of the character.
+ * @param {string} profession - The profession of the character.
+ * @param {string} faceclaim - The faceclaim of the character.
+ * @param {Object} atributos - The attributes object with values.
+ * @param {Array<Object>} habilidades - The list of skills with their values.
+ * @param {string} characterHistory - The history of the character.
+ * @param {string} imageLink - The link to the character's image.
+ * @returns {string} The HTML string for the character sheet.
+ */
+function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, imageLink) {
+  const habilidadesHTML = habilidades.map(({ nome, valor, passiva, bonus }) =>
+    passiva ? `<b>${nome} —</b> passiva<br>` :
+      bonus && valor <= 4 ? `<b>${nome} —</b> 4<br>` :
+        `<b>${nome} —</b> ${valor}<br>`
+  ).join('');
 
   return `[dohtml]<style>.one {width: 95%; background-color: #333;}</style>
 <div id="holdapp">
-<div class="holdapptop">
-<div class="color"></div>
-<div class="holdinsideapp"><div class="tituloapp"><strong>${name}</strong><br><br>
-<div class="jarzietext">
-<center> <table><tr>
-
-<td>    
-<div class="appabilities">Grupo</div>
-<div class="appskillscontainer">
-<div class="appskills one">${group}</div>
-</div>
-<p>
-
-<div class="appabilities">Classe</div>
-<div class="appskillscontainer">
-<div class="appskills one">${classType}</div>
-</div>
-<p>
-
-<div class="appabilities">Idade</div>
-<div class="appskillscontainer">
-<div class="appskills one">${age} anos</div>
-</div>
-<p>
-
-<div class="appabilities">Ocupação</div>
-<div class="appskillscontainer">
-<div class="appskills one">${occupation}</div>
-</div>
-<p>
-
-<div class="appabilities">Profissão</div>
-<div class="appskillscontainer">
-<div class="appskills one">${profession}</div>
-</div>
-<p>
-
-<div class="appabilities">Faceclaim</div>
-<div class="appskillscontainer">
-<div class="appskills one">${faceclaim}</div>
-</div>
-</td><td><img src="${imageLink || 'https://via.placeholder.com/200x320'}" class="mad_imagem"></td>
-
-</tr></table></center></div><p><p>
-
-<div class="tituloapp2"><strong>História</strong></div>
-
-<div class="jarzietext">
-${characterHistory}
-</div>
-<p><p>
-<div class="tituloapp2"><strong>Atributos</strong></div>
-<div class="jarzietext"><center><table style="padding: 20px 30px;"><tr>
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.FOR}</div><p><p> FOR </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.DES}</div><p><p> DES </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.PRE}</div><p><p> PRE </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.MEN}</div><p><p> MEN </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.ALM}</div><p><p> ALM </td>
- </tr></table>
-
-<table><tr><td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.CON}</div><p><p> CON </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.REF}</div><p><p> REF </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.GUA}</div><p><p> GUA </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.AUR}</div><p><p> AUR </td>
-
-<td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.BIO}</div><p><p> BIO </td>
- </tr></table>
-
-</center></div><p><p>
-
-
-<div class="tituloapp2"><strong>Habilidades</strong></div>
-
-<div class="jarzietext">
-<b>Habilidade de Grupo</b><br>
-${habilidadesHTML}
-</div><p><p>
-
-</div>
-</div>
+    <div class="holdapptop">
+        <div class="color"></div>
+        <div class="holdinsideapp">
+            <div class="tituloapp"><strong>${name}</strong><br><br>
+                <div class="jarzietext">
+                    <center>
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="appabilities">Grupo</div>
+                                    <div class="appskillscontainer">
+                                        <div class="appskills one">${group}</div>
+                                    </div>
+                                    <p>
+                                    <div class="appabilities">Classe</div>
+                                    <div class="appskillscontainer">
+                                        <div class="appskills one">${classType}</div>
+                                    </div>
+                                    <p>
+                                    <div class="appabilities">Idade</div>
+                                    <div class="appskillscontainer">
+                                        <div class="appskills one">${age} anos</div>
+                                    </div>
+                                    <p>
+                                    <div class="appabilities">Ocupação</div>
+                                    <div class="appskillscontainer">
+                                        <div class="appskills one">${occupation}</div>
+                                    </div>
+                                    <p>
+                                    <div class="appabilities">Profissão</div>
+                                    <div class="appskillscontainer">
+                                        <div class="appskills one">${profession}</div>
+                                    </div>
+                                    <p>
+                                    <div class="appabilities">Faceclaim</div>
+                                    <div class="appskillscontainer">
+                                        <div class="appskills one">${faceclaim}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <img src="${imageLink || 'https://via.placeholder.com/200x320'}" class="mad_imagem">
+                                </td>
+                            </tr>
+                        </table>
+                    </center>
+                </div>
+                <p><p>
+                <div class="tituloapp2"><strong>História</strong></div>
+                <div class="jarzietext">${characterHistory}</div>
+                <p><p>
+                <div class="tituloapp2"><strong>Atributos</strong></div>
+                <div class="jarzietext">
+                    <center>
+                        <table style="padding: 20px 30px;">
+                            <tr>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.FOR}</div><p><p> FOR </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.DES}</div><p><p> DES </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.PRE}</div><p><p> PRE </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.MEN}</div><p><p> MEN </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.ALM}</div><p><p> ALM </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.CON}</div><p><p> CON </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.REF}</div><p><p> REF </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.GUA}</div><p><p> GUA </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.AUR}</div><p><p> AUR </td>
+                                <td style="padding: 20px 30px;"><div class="subtituloappi">${atributos.BIO}</div><p><p> BIO </td>
+                            </tr>
+                        </table>
+                    </center>
+                </div>
+                <p><p>
+                <div class="tituloapp2"><strong>Habilidades</strong></div>
+                <div class="jarzietext"><b>Habilidade de Grupo</b><br>${habilidadesHTML}</div>
+                <p><p>
+            </div>
+        </div>
+    </div>
 </div>
 [/dohtml]`;
 }
+
+/**
+ * Transforms the string based on the group.
+ * @param {string} grupo - The group string to transform.
+ * @returns {string} The transformed string.
+ */
+function transformarString(grupo) {
+  const transformacoes = {
+    "Bióticos": "biotico",
+    "Caçador": "cacador",
+    "Ciborgue": "ciborgue",
+    "Feiticeiro": "feiticeiro",
+    "Górgonas": "gorgona",
+    "Metamorfos": "metamorfo",
+    "Licantropos": "licantropo",
+    "Sereianos": "sereiano",
+    "Vampiros": "vampiro",
+    "Demônio": "demonio",
+    "Parademônio": "parademonio"
+  };
+
+  return transformacoes[grupo] || grupo;
+}
+
+/**
+ * Generates the photoplayer code.
+ * @param {string} nome - The name of the character.
+ * @param {string} faceclaim - The faceclaim of the character.
+ * @param {string} grupo - The group of the character.
+ * @returns {string} The photoplayer code.
+ */
+function gerarPPCode(nome, faceclaim, grupo) {
+  return `[CODE]<b><${transformarString(grupo) || 'grupo'}>${faceclaim.toUpperCase() || 'NOME DO PHOTOPLAYER'}</${transformarString(grupo) || 'grupo'}></b><br> ${nome || 'Nome Personagem'}<br>[/CODE]`;
+}
+/**
+ * Gets the link entered in the image field.
+ * @returns {string} The image link
+ */
+function getImageLink() {
+  const imageLink = document.getElementById('imageLink').value;
+  document.getElementById('imageFrame').src = imageLink;
+  return imageLink;
+}
+
+/**
+ * Generates the occupation code.
+ * @param {string} nome - The name of the character.
+ * @param {string} grupo - The group of the character.
+ * @param {string} ocupacao - The occupation of the character.
+ * @returns {string} The occupation code.
+ */
+function gerarOCCode(nome, grupo, ocupacao) {
+  return `${nome || 'Nome do Personagem'}: ${grupo || 'Grupo'}, ${ocupacao || 'Ocupação'}.`;
+}
+
+/**
+ * Event listeners initialization.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Initialize Select2 for dropdowns
+  $('#group, #class, #occupation').select2({
+    placeholder: "Selecione uma opção",
+    allowClear: true
+  });
+
+  // Add skill row
+  document.getElementById('add-skill').addEventListener('click', () => {
+    const skillsContainer = document.getElementById('skills-container');
+    const skillCount = skillsContainer.getElementsByClassName('skill-row').length + 1;
+    const skillRow = createSkillRow(skillCount);
+    skillsContainer.appendChild(skillRow);
+
+    skillRow.querySelector('.remove-skill').addEventListener('click', () => {
+      skillsContainer.removeChild(skillRow);
+    });
+  });
+
+  // Get the image
+  document.getElementById('sendImg').addEventListener('click', () => getImageLink());
+
+  // Generate character sheet
+  document.getElementById('generate').addEventListener('click', () => {
+    document.getElementById("generated-code").classList.remove("border-danger");
+
+    if (!validateForm()) {
+      document.getElementById("generated-code").classList.add("border-danger");
+    }
+
+    const name = document.getElementById('name').value;
+    const group = document.getElementById('group').value;
+    const classType = document.getElementById('class').value;
+    const age = parseInt(document.getElementById('age').value, 10) || 0;
+    const occupation = document.getElementById('occupation').value;
+    const profession = document.getElementById('profession').value;
+    const faceclaim = document.getElementById('faceclaim').value;
+    const atributos = getAtributos();
+    const habilidades = getHabilidades();
+    const characterHistory = window.editor.getData();
+    const imageLink = getImageLink();
+
+    const characterSheetHTML = gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, imageLink);
+    document.getElementById('generated-code').textContent = characterSheetHTML;
+
+    const photoplayerCode = gerarPPCode(name, faceclaim, group);
+    document.getElementById('photoplayerRegistry').placeholder = photoplayerCode;
+
+    const occupationCode = gerarOCCode(name, group, occupation);
+    document.getElementById('occupationRegistry').placeholder = occupationCode;
+
+    const xpResult = JSON.stringify(calcularXP(atributos, habilidades), null, 2);
+    document.getElementById('xp-json').textContent = xpResult;
+  });
+
+  // Copy to clipboard functions
+  ['copy-generated', 'copy-xp', 'copy-pp', 'copy-oc'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => {
+      const target = id.replace('copy-', '');
+      const element = document.getElementById(target);
+
+      navigator.clipboard.writeText(element.textContent || element.placeholder).then(() => {
+        alert('Copiado para a área de transferência!');
+      });
+    });
+  });
+});
 
