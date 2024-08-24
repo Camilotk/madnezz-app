@@ -599,13 +599,17 @@ function importFromJSON(file) {
 
       // Preencher os campos do formulário
       document.querySelector('#name').value = formData.name || '';
-      document.querySelector('#group').value = formData.group || '';
-      document.querySelector('#class').value = formData.class || '';
+      // document.querySelector('#group').value = formData.group || '';
+      $('#group').val(formData.group || '').trigger('change');
+      // document.querySelector('#class').value = formData.class || '';
+      $('#class').val(formData.class || '').trigger('change');
       document.querySelector('#age').value = formData.age || '';
-      document.querySelector('#occupation').value = formData.occupation || '';
+      // document.querySelector('#occupation').value = formData.occupation || '';
+      $('#occupation').val(formData.occupation || '').trigger('change');
       document.querySelector('#profession').value = formData.profession || '';
       document.querySelector('#faceclaim').value = formData.faceclaim || '';
       document.querySelector('#imageLink').value = formData.imageLink || '';
+      document.getElementById('imageFrame').src = JSON.parse(e.target.result).imageLink || 'https://via.placeholder.com/200x320';
 
       if (window.editor) {
         window.editor.setData(formData.history || '');
@@ -663,6 +667,7 @@ function importFromJSON(file) {
     }
   };
   reader.readAsText(file);
+  alert("Importado com sucesso");
 }
 
 // Adicionar o event listener para o botão de importação
