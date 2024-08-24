@@ -1,14 +1,33 @@
 document.getElementById('add-skill').addEventListener('click', () => {
   const skillsContainer = document.getElementById('skills-container');
   const skillCount = skillsContainer.getElementsByClassName('skill-row').length + 1;
+
   const skillRow = document.createElement('div');
-  skillRow.classList.add('skill-row');
+  skillRow.classList.add('skill-row', 'form-group', 'mb-3');
   skillRow.innerHTML = `
-        <label for="skill${skillCount}">Habilidade ${skillCount}:</label><br>
-        <input type="text" class="form-control skill-name  mb-3" placeholder="Nome da habilidade">
-        <input type="number" class="form-control skill-value" placeholder="Nível da habilidade" value="0">
-        <span class="remove-skill">Remover</span>
+        <label for="skill${skillCount}" class="form-label">Habilidade ${skillCount}:</label>
+        <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
+        <input type="number" class="form-control skill-value mb-3" placeholder="Nível da habilidade" value="0" min="0" max="10">
+        
+        <div class="row">
+            <div class="col-md-4 d-flex align-items-center">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="passiva${skillCount}" name="passiva${skillCount}" onchange="toggleCheckbox('passiva${skillCount}', 'bonus${skillCount}')">
+                    <label class="form-check-label" for="passiva${skillCount}">Passiva</label>
+                </div>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-center">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="bonus${skillCount}" name="bonus${skillCount}" onchange="toggleCheckbox('bonus${skillCount}', 'passiva${skillCount}')">
+                    <label class="form-check-label" for="bonus${skillCount}">Bonus</label>
+                </div>
+            </div>
+        </div>
+        
+        <span class="remove-skill text-danger" style="cursor: pointer;">Remover</span>
     `;
+
   skillsContainer.appendChild(skillRow);
 
   // Attach event listener to the new remove button
@@ -16,6 +35,15 @@ document.getElementById('add-skill').addEventListener('click', () => {
     skillsContainer.removeChild(skillRow);
   });
 });
+
+function toggleCheckbox(selectedId, otherId) {
+  var selectedCheckbox = document.getElementById(selectedId);
+  var otherCheckbox = document.getElementById(otherId);
+
+  if (selectedCheckbox.checked) {
+    otherCheckbox.checked = false;
+  }
+}
 
 function displayAlert(message, type) {
   const alertContainer = document.getElementById('alert-container');
@@ -77,7 +105,16 @@ function validateForm() {
     errors.push('- Você deve entrar uma história de personagem.');
   }
 
-  // Calculate XP
+  // Get skills values
+  const skillsContainer = document.getElementById('skills-container');
+  const skillRows = skillsContainer.getElementsByClassName('skill-row');
+  const habilidades = [];
+
+  for (let i = 0; i < skillRows.length; i++) {
+    processSkillRow(skillRows[i], i + 1, habilidades);
+  }
+
+  // Calculate XP (using the corrected 'habilidades' array)
   const result = calcularXP({
     FOR: parseInt(document.getElementById('for').value) || 0,
     DES: parseInt(document.getElementById('des').value) || 0,
@@ -89,11 +126,9 @@ function validateForm() {
     GUA: parseInt(document.getElementById('gua').value) || 0,
     AUR: parseInt(document.getElementById('aur').value) || 0,
     BIO: parseInt(document.getElementById('bio').value) || 0
-  }, Object.values(document.querySelectorAll('.skill-value')).map(e => parseInt(e.value) || 0));
+  }, habilidades); // Pass the 'habilidades' array directly
 
   const xp_restante = result.xpRestante;
-
-  // console.log({ "XP Restante": result.xpRestante, "Result": JSON.stringify(result) })
 
   if (xp_restante > 0) {
     errors.push(`- Você tem ${xp_restante} XP sobrando, o XP tem que ser 0. Gaste os ${xp_restante} restantes.`);
@@ -138,15 +173,11 @@ document.getElementById('generate').addEventListener('click', () => {
   // Get skills values
   const skillsContainer = document.getElementById('skills-container');
   const skillRows = skillsContainer.getElementsByClassName('skill-row');
-  const habilidades = {};
+  const habilidades = [];
 
-  for (const row of skillRows) {
-    const skillName = row.querySelector('.skill-name').value.trim();
-    const skillValue = parseInt(row.querySelector('.skill-value').value) || 0;
-
-    if (skillName) {
-      habilidades[skillName] = skillValue;
-    }
+  // Pass skillCount to the loop
+  for (let i = 0; i < skillRows.length; i++) {
+    processSkillRow(skillRows[i], i + 1, habilidades);
   }
 
   // Generate character sheet
@@ -182,6 +213,28 @@ function transformarString(grupo) {
   };
 
   return transformacoes[grupo] || grupo;
+}
+
+function processSkillRow(row, skillCount, habilidades) {
+  const skillName = row.querySelector('.skill-name').value.trim();
+  const skillValue = parseInt(row.querySelector('.skill-value').value) || 0;
+
+  // Get the checkbox elements by their IDs (using skillCount)
+  const skillPassiveCheckbox = row.querySelector(`#passiva${skillCount}`);
+  const skillBonusCheckbox = row.querySelector(`#bonus${skillCount}`);
+
+  // Check if they are checked
+  const skillPassive = skillPassiveCheckbox.checked;
+  const skillBonus = skillBonusCheckbox.checked;
+
+  if (skillName) {
+    habilidades.push({
+      nome: skillName,
+      valor: skillValue,
+      passiva: skillPassive,
+      bonus: skillBonus
+    });
+  }
 }
 
 function gerarPPCode(nome, faceclaim, grupo) {
@@ -297,11 +350,25 @@ function calcularCustoAtributos(atributos) {
   }, 0);
 }
 
+
 function calcularCustoHabilidades(habilidades) {
-  return Object.values(habilidades).reduce((acc, val) => {
+  return habilidades.reduce((acc, habilidade) => {
     let custo = 0;
-    for (let i = 1; i <= val; i++) {
-      custo += preco_habilidades[i] || 0;
+    const { valor, passiva, bonus } = habilidade;
+    if (passiva) {
+      custo = 25;  // Passiva always costs 25 XP
+    } else if (bonus) {
+      if (valor <= 4) {
+        custo = 0;  // Bônus is free up to level 4
+      } else {
+        for (let i = 5; i <= valor; i++) {
+          custo += preco_habilidades[i] || 0;
+        }
+      }
+    } else {
+      for (let i = 1; i <= valor; i++) {
+        custo += preco_habilidades[i] || 0;
+      }
     }
     return acc + custo;
   }, 0);
@@ -309,9 +376,15 @@ function calcularCustoHabilidades(habilidades) {
 
 function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, imageLink) {
   let habilidadesHTML = '';
-  for (const [skill, level] of Object.entries(habilidades)) {
-    habilidadesHTML += `<b>${skill} —</b> ${level}<br>`;
-  }
+  habilidades.forEach(({ nome, valor, passiva, bonus }) => {
+    if (passiva) {
+      habilidadesHTML += `<b>${nome} —</b> passiva<br>`;
+    } else if (bonus && valor <= 4) {
+      habilidadesHTML += `<b>${nome} —</b> 4<br>`;
+    } else {
+      habilidadesHTML += `<b>${nome} —</b> ${valor}<br>`;
+    }
+  });
 
   return `[dohtml]<style>.one {width: 95%; background-color: #333;}</style>
 <div id="holdapp">

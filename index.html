@@ -158,14 +158,31 @@
 
             <h3>Habilidades</h3>
             <p><ins>Coloque as passivas como 1 e as gratuitas como 0</ins></p>
-
+              
             <div id="skills-container">
-                <div class="skill-row form-group">
-                    <label for="skill1">Habilidade 1:</label>
-                    <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
-                    <input type="number" class="form-control skill-value" placeholder="Nível da habilidade" value="0">
-                    <span class="remove-skill">Remover</span>
+              <div class="skill-row form-group mb-3">
+                <label for="skill1" class="form-label">Habilidade 1:</label>
+                <input type="text" class="form-control skill-name mb-3" placeholder="Nome da habilidade">
+                <input type="number" class="form-control skill-value mb-3" placeholder="Nível da habilidade" value="0" min="0" max="10">
+
+                <div class="row">
+                  <div class="col-md-4 d-flex align-items-center">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="passiva1" name="passiva1" onchange="toggleCheckbox('passiva1', 'bonus1')">
+                      <label class="form-check-label" for="passiva1">Passiva</label>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 d-flex align-items-center">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="bonus1" name="bonus1" onchange="toggleCheckbox('bonus1', 'passiva1')">
+                      <label class="form-check-label" for="bonus1">Bonus</label>
+                    </div>
+                  </div>
                 </div>
+
+                <span class="remove-skill text-danger" style="cursor: pointer;">Remover</span>
+              </div>
             </div>
             <button type="button" id="add-skill" class="btn btn-success">Adicionar Habilidade</button>
 
