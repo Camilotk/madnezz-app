@@ -420,12 +420,11 @@ function transformarString(grupo) {
     "Caçador": "cacador",
     "Ciborgue": "ciborgue",
     "Feiticeiro": "feiticeiro",
-    "Górgonas": "gorgona",
-    "Metamorfos": "metamorfo",
-    "Licantropos": "licantropo",
-    "Sereianos": "sereiano",
-    "Vampiros": "vampiro",
-    "Demônio": "demonio",
+    "Górgona": "gorgona",
+    "Metamorfo": "metamorfo",
+    "Licantropo": "licantropo",
+    "Sereiano": "sereiano",
+    "Vampiro": "vampiro",
     "Parademônio": "parademonio"
   };
 
@@ -521,16 +520,30 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('xp-json').textContent = xpResult;
   });
 
-  // Copy to clipboard functions
-  ['copy-generated', 'copy-xp', 'copy-pp', 'copy-oc'].forEach(id => {
-    document.getElementById(id).addEventListener('click', () => {
-      const target = id.replace('copy-', '');
-      const element = document.getElementById(target);
-
-      navigator.clipboard.writeText(element.textContent || element.placeholder).then(() => {
-        alert('Copiado para a área de transferência!');
-      });
+  document.getElementById('copy-generated').addEventListener('click', () => {
+    const generatedCode = document.getElementById('generated-code');
+    navigator.clipboard.writeText(generatedCode.textContent).then(() => {
+      alert('Ficha copiada para a área de transferência!');
     });
+  });
+
+  document.getElementById('copy-pp').addEventListener('click', () => {
+    const generatedCode = document.getElementById('photoplayerRegistry');
+    const decodedText = decodeURIComponent(generatedCode.placeholder);
+
+    navigator.clipboard.writeText(decodedText).then(() => {
+      alert('Photoplayer copiado para a área de transferência!');
+    });
+  });
+
+  document.getElementById('copy-oc').addEventListener('click', () => {
+    const generatedCode = document.getElementById('occupationRegistry');
+    const decodedText = decodeURIComponent(generatedCode.placeholder);
+
+    navigator.clipboard.writeText(decodedText).then(() => {
+      alert('Ocupação copiado para a área de transferência!');
+    });
+    console.log(decodedText)
   });
 
   // Get the image
