@@ -319,8 +319,9 @@ function calcularCustoHabilidades(habilidades) {
 function gerarFicha(name, group, classType, age, occupation, profession, faceclaim, atributos, habilidades, characterHistory, imageLink) {
   const habilidadesHTML = habilidades.map(({ nome, valor, passiva, bonus }) =>
     passiva ? `<b>${nome} —</b> passiva<br>` :
-      bonus && valor <= 4 ? `<b>${nome} —</b> 4<br>` :
-        `<b>${nome} —</b> ${valor}<br>`
+      bonus && valor <= 4 ? `<b>${nome} —</b> 4 (bônus)<br>` :
+        bonus && valor >= 4 ? `<b>${nome} —</b> ${valor} (bônus)<br>` :
+          `<b>${nome} —</b> ${valor}<br>`
   ).join('');
 
   return `[dohtml]<style>.one {width: 95%; background-color: #333;}</style>
@@ -537,13 +538,17 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('copy-oc').addEventListener('click', () => {
-    const generatedCode = document.getElementById('occupationRegistry');
-    const decodedText = decodeURIComponent(generatedCode.placeholder);
+    const generatedCode = document.getElementById('occupationRegistry').getAttribute('placeholder');
 
-    navigator.clipboard.writeText(decodedText).then(() => {
+    // Explicitly treat as a string
+    const textToCopy = `${generatedCode}`;  // Template literal to force string handling
+
+    navigator.clipboard.writeText(textToCopy).then(() => {
       alert('Ocupação copiado para a área de transferência!');
+    }).catch(err => {
+      console.error('Erro ao copiar o texto: ', err);
     });
-    console.log(decodedText)
+    console.log(textToCopy);
   });
 
   // Get the image
